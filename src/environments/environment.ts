@@ -3,8 +3,16 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  bcdc_base_url: "https://catalogue.data.gov.bc.ca",
+  bcdc_api_path: "/api/3/action",
+  argg_api_base_url: "http://localhost:4200",
+  license_list_url: "https://licenses-bcdc.data.gov.bc.ca/bcdc_licenses.json",
+  role_list_url: "/assets/roles.json",
+  security_classifications_url: "/assets/security-classifications.json",
+  view_audiences_url: "/assets/view-audiences.json",
 };
+
 
 /*
  * In development mode, to ignore zone related error stack frames such as

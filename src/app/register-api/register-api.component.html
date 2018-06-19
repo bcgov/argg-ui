@@ -1,0 +1,384 @@
+<p>The BC Government and the broader public service sector in the province collectively operate many RESTful web services (also known as Application Programming Interfaces, or APIs).  This web site provides a means to register an API with the <a href="{{env.bcdc_base_url}}" target="blank">BC Data Catalog</a> and to optionally opt in to DataBC's API gateway, which can provide additional technical capabilities on top of an existing API.</p>
+
+  <div class="row">
+    <div class="col-md-8">
+
+      <form [formGroup]="form1">
+
+        <!-- API specification -->
+        <div class="panel panel-default">
+          <div class="panel-heading">OpenAPI specification</div>
+          <div class="panel-body">
+
+            <p><a href="https://github.com/OAI/OpenAPI-Specification" target="_blank">OpenAPI</a> is a standard format for specifying the capabilities of a RESTful API.</p>
+            <p>Although you may register an API without an OpenAPI specification, it is good practice for all RESTful APIs to provide a specification file in a standard format, such as the OpenAPI format.</p>
+
+            <div class="form-group">
+              <label class="required">Does the API have an OpenAPI specification that accessible via URL?</label>&nbsp;&nbsp;
+
+              <div class="radio-inline">
+                <label>
+                  <input type="radio" name="hasOpenApiSpec" id="hasOpenApiSpecYes" value="yes" formControlName="hasOpenApiSpec">
+                  Yes
+                </label>
+              </div>
+              <div class="radio-inline">
+                <label>
+                  <input type="radio" name="hasOpenApiSpec" id="hasOpenApiSpecNo" value="no" formControlName="hasOpenApiSpec">
+                  No
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group" *ngIf="form1.get('hasOpenApiSpec').value == 'yes'">
+              <label class="required" for="inputTitle">OpenAPI specification URL</label>
+              <div class="input-group" >
+                <input type="text" class="form-control" id="openapi-spec-url" placeholder="URL" formControlName="openApiSpecUrl">
+                <div class="input-group-addon simple-addon">
+                  <div class="loader" *ngIf="loadingOpenApiSpecUrl"></div>
+                </div>
+              </div>
+            </div>
+
+
+            <div class="alert alert-warning" role="alert" *ngIf="form1.get('openApiSpecUrl').value && openApiSpecErr">
+              <span class="glyphicon glyphicon-search" aria-hidden="true"></span> {{openApiSpecErr}}
+            </div>            
+
+            <div class="alert alert-info" role="alert" *ngIf="form1.get('openApiSpecUrl').value && !openApiSpecErr && autocompleteFromOpenApiSpec">
+              <span class="glyphicon glyphicon-search" aria-hidden="true"></span> Some of the form fields below have been automatically completed for you based on information in the OpenAPI specification file.  Please review the information below and fill in any missing details.
+            </div>  
+
+            <div class="alert well" *ngIf="form1.get('hasOpenApiSpec').value == 'yes' && !form1.get('openApiSpecUrl').value">
+              <span class="glyphicon glyphicon-search" aria-hidden="true"></span> Please specify the URL of the OpenAPI specification before proceeding to enter the remaining form information below.
+            </div>            
+
+          </div>
+        </div>    
+
+      </form>
+
+      <div>
+
+        <form [formGroup]="form2">
+          <!-- *ngIf="form1.get('hasOpenApiSpec').value == 'no' || openApiSpecData" -->
+
+          <!-- General API info -->
+
+          <div class="panel panel-default">
+            <div class="panel-heading">General API information</div>
+            <div class="panel-body">
+
+              <div class="form-group">
+                <label class="required" for="inputTitle">Title</label>
+                <input type="text" class="form-control" id="title" placeholder="Title" formControlName="title">
+              </div>          
+
+              <div class="form-group">
+                <label class="required" for="inputTitle">Description</label>
+                <textarea class="form-control" id="description" placeholder="Description" formControlName="description" rows="5"></textarea>
+              </div>    
+
+              <div class="form-group">
+                <label class="required" for="inputTitle">API Base URL</label>
+                <input type="text" class="form-control" id="base-url" placeholder="URL" formControlName="baseUrl">
+              </div>  
+
+              <div class="form-group">
+                <label>Does the API support HTTPS?</label>&nbsp;&nbsp;
+
+                <div class="radio-inline">
+                  <label>
+                    <input type="radio" name="supportsHttps" id="supports-https-yes" value="yes" formControlName="supportsHttps">
+                    Yes
+                  </label>
+                </div>
+                <div class="radio-inline">
+                  <label>
+                    <input type="radio" name="supportsHttps" id="supports-https-no" value="no" formControlName="supportsHttps">
+                    No
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Does the API support Cross Origin Resource Sharing (CORS)?</label>&nbsp;&nbsp;
+
+                <div class="radio-inline">
+                  <label>
+                    <input type="radio" name="supportsCors" id="supports-cors-yes" value="yes" formControlName="supportsCors">
+                    Yes
+                  </label>
+                </div>
+                <div class="radio-inline">
+                  <label>
+                    <input type="radio" name="supportsCors" id="supports-cors-no" value="no" formControlName="supportsCors">
+                    No
+                  </label>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- API owner -->
+          <div class="panel panel-default">
+            <div class="panel-heading">API owner</div>
+            <div class="panel-body">
+
+              <div class="form-group">
+                <label class="required" for="inputTitle">Organization</label>
+                <div class="input-group">
+                  <select class="form-control" formControlName="ownerOrg">
+                    <option *ngFor="let org of topLevelOrganizations" [ngValue]="org">{{org.title}}</option>
+                  </select>
+                  <div class="input-group-addon simple-addon">
+                    <div class="loader" *ngIf="bcdcService.loadingOrganizations.value"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group" *ngIf="form2.get('ownerOrg').value && ownerSubOrganizations.length > 0">
+                <label class="required" for="inputTitle">Sub-organization</label>
+                <select class="form-control" formControlName="ownerSubOrg">
+                  <option *ngFor="let org of ownerSubOrganizations" [ngValue]="org">{{org.title}}</option>
+                </select>
+              </div>              
+
+            </div>
+            <div class="panel-heading">Principal contact person for API owner</div>
+            <div class="panel-body">
+
+              <div class="form-group">
+                <label class="required" for="inputTitle">Name</label>
+                <input type="text" class="form-control" id="principal-contact-name" placeholder="Name" formControlName="principalContactName">
+              </div>
+
+              <div class="form-group">
+                <label class="required" for="inputTitle">Email Address</label>
+                <input type="text" class="form-control" id="principal-contact-email" placeholder="Email Address" formControlName="principalContactEmail">
+              </div>
+
+              <div class="form-group">
+                <label class="required" for="inputTitle">Phone Number</label>
+                <input type="text" class="form-control" id="principal-contact-phone" placeholder="Phone Number" formControlName="principalContactPhone">
+              </div>            
+
+              <div class="form-group">
+                <label class="required">Are you the person listed above?</label>&nbsp;&nbsp;
+
+                <div class="radio-inline">
+                  <label>
+                    <input type="radio" name="isPrincipalContact" id="is-principal-contact-yes" value="yes" formControlName="isPrincipalContact">
+                    Yes
+                  </label>
+                </div>
+                <div class="radio-inline">
+                  <label>
+                    <input type="radio" name="isPrincipalContact" id="is-principal-contact-no" value="no" formControlName="isPrincipalContact">
+                    No
+                  </label>
+                </div>
+              </div>   
+
+            </div>
+            <div class="panel-heading" *ngIf="form2.get('isPrincipalContact').value == 'no'">Your contact information</div>
+            <div class="panel-body" *ngIf="form2.get('isPrincipalContact').value == 'no'">
+              
+              <div class="form-group">
+                <label class="required" for="inputTitle">Name</label>
+                <input type="text" class="form-control" id="submitter-contact-name" placeholder="Name" formControlName="submitterContactName">
+              </div>
+
+              <div class="form-group">
+                <label class="required" for="inputTitle">Email Address</label>
+                <input type="text" class="form-control" id="submitter-contact-email" placeholder="Email Address" formControlName="submitterContactEmail">
+              </div>
+
+              <div class="form-group">
+                <label class="required" for="inputTitle">Phone Number</label>
+                <input type="text" class="form-control" id="submitter-contact-phone" placeholder="Phone Number" formControlName="submitterContactPhone">
+              </div>
+
+              <div class="form-group">
+                <label class="required" for="inputTitle">Role</label>
+                <select class="form-control" formControlName="submitterRole">
+                  <option *ngFor="let role of roles" value="role.id">{{role.name}}</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="required" for="inputTitle">Organization</label>
+                <input type="text" class="form-control" id="submitter-org" placeholder="Organization" formControlName="submitterOrg">
+              </div>                
+
+            </div>
+
+          </div>
+
+          <!-- metadata record -->
+          <div class="panel panel-default">
+            <div class="panel-heading">Metadata record</div>
+            <div class="panel-body">
+
+              <div class="form-group">
+                <label class="required">Does the API have an existing metadata record in the BC Data Catalog?</label><br/>&nbsp;&nbsp;
+
+                <div class="radio-inline">
+                  <label>
+                    <input type="radio" name="hasMetadataRecord" id="has-metadata-record-yes" value="yes" formControlName="hasMetadataRecord">
+                    Yes
+                  </label>
+                </div>
+                <div class="radio-inline">
+                  <label>
+                    <input type="radio" name="hasMetadataRecord" id="has-metadata-record-no" value="no" formControlName="hasMetadataRecord">
+                    No
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-group" *ngIf="form2.get('hasMetadataRecord').value == 'yes'">
+                <label class="required" for="inputTitle">Metadata Record URL</label>
+                <input type="text" class="form-control" id="metadata-record-url" placeholder="URL" formControlName="metadataRecordUrl">
+              </div>
+
+              <div *ngIf="form2.get('hasMetadataRecord').value == 'no'">
+                <div class="alert alert-info" role="alert">
+                  <span class="glyphicon glyphicon-search" aria-hidden="true"></span> A new metadata record will be created for you based on the information you provide in this form.
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+
+
+          <!-- API Access -->
+          <div class="panel panel-default">
+            <div class="panel-heading">Access</div>
+            <div class="panel-body">
+
+              <div class="form-group">
+                <label class="required" for="inputTitle">Who can access this API?</label>
+                <select class="form-control" formControlName="viewAudience">
+                  <option *ngFor="let viewAudience of viewAudiences" value="viewAudience">{{viewAudience}}</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="required" for="inputTitle">Security classification</label>
+                <select class="form-control" formControlName="securityClass">
+                  <option *ngFor="let securityClassification of securityClassifications" value="securityClassification">{{securityClassification}}</option>
+                </select>
+              </div>            
+
+              <div class="form-group">
+                <label class="required" for="inputTitle">License</label>
+                <select class="form-control" formControlName="license">
+                  <option *ngFor="let license of licenses" value="license.id">{{license.title}}</option>
+                </select>
+              </div>     
+
+            </div>
+
+          </div>
+
+          <!-- API gateway -->
+          <div class="panel panel-default">
+            <div class="panel-heading">API gateway</div>
+            <div class="panel-body">
+
+              <p>DataBC offers APIs in the BC public service access to an API gateway.  The API gateway can add additional capabilities (such as access control and throttling) on top of an API's core business functions.  In addition, APIs registered with the API gateway can be assigned a conveinent URL (https://app-short-name.api.gov.bc.ca).</p>
+
+              <p>Use of DataBC's API gateway is optional.  If the API being registered here already uses a different API gateway, or if you otherwise do not require the capabilities of an API gateway, you may opt out.</p>
+
+              <div class="form-group">
+                <label class="required">Do you want the API to be registered with DataBC's API gateway?</label><br/>&nbsp;&nbsp;
+
+                <div class="radio-inline">
+                  <label>
+                    <input type="radio" name="useGateway" id="use-gateway-yes" value="yes" formControlName="useGateway">
+                    Yes
+                  </label>
+                </div>
+                <div class="radio-inline">
+                  <label>
+                    <input type="radio" name="useGateway" id="use-gateway-no" value="no" formControlName="useGateway">
+                    No
+                  </label>
+                </div>
+                <div class="radio-inline">
+                  <label>
+                    <input type="radio" name="useGateway" id="use-gateway-no" value="not-sure" formControlName="useGateway">
+                    Not sure
+                  </label>
+                </div>                
+              </div>
+
+              <div *ngIf="form2.get('useGateway').value == 'yes'">
+                <h4>Which capabilities of the API gateway are you interested in?</h4>
+
+                <div class="form-group">
+                  <label>Throttling access</label><br/>&nbsp;&nbsp;
+
+                  <div class="radio-inline">
+                    <label>
+                      <input type="radio" name="useGatewayThrottling" id="use-gateway-throttling-yes" value="yes" formControlName="useGatewayThrottling">
+                      Yes
+                    </label>
+                  </div>
+                  <div class="radio-inline">
+                    <label>
+                      <input type="radio" name="useGatewayThrottling" id="use-gateway-throttling-no" value="no" formControlName="useGatewayThrottling">
+                      No
+                    </label>
+                  </div>
+                </div> 
+
+                <div class="form-group">
+                  <label>Restricting access with API keys</label><br/>&nbsp;&nbsp;
+
+                  <div class="radio-inline">
+                    <label>
+                      <input type="radio" name="useGatewayApiKeys" id="use-gateway-api-keys-yes" value="yes" formControlName="useGatewayApiKeys">
+                      Yes
+                    </label>
+                  </div>
+                  <div class="radio-inline">
+                    <label>
+                      <input type="radio" name="useGatewayApiKeys" id="use-gateway-api-keys-no" value="no" formControlName="useGatewayApiKeys">
+                      No
+                    </label>
+                  </div>
+                </div>                             
+
+                <div class="form-group">
+                  <label for="inputTitle">Application short name</label>
+                  <input type="text" class="form-control" id="application-shortname" placeholder="Application short name" formControlName="applicationShortName">
+                  <span for="inputTitle">The application short name is used to create a convient and memorable URL for the API.  For example: <span style='white-space: nowrap;'>https://<b>app-short-name</b>.api.gov.bc.ca</span></span>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+        </form>
+
+        <div class="alert alert-info" *ngIf="form1.valid && form2.valid && !submitSuccess">By clicking "submit" below, the information you provided here will be forwarded to DataBC.  DataBC will review the information, and may contact you <span *ngIf="form2.get('isPrincipalContact').value == 'no'">(or the API owner)</span> to confirm details of the request.</div>
+
+        <button class="btn btn-default pull-right" (click)="submit()" [disabled]="(submitLoading || !form1.valid || !form2.valid)" *ngIf="!submitSuccess">Submit</button>
+
+        <div class="alert alert-success" *ngIf="form1.valid && form2.valid && submitSuccess">The API information has been submitted.  DataBC may contact you <span *ngIf="form2.get('isPrincipalContact').value == 'no'">(or the API owner)</span> to discuss the API registration.</div>
+
+        <div class="alert alert-danger" *ngIf="submitError">Unable to register the API.  {{submitError}}</div>        
+
+        <div class="divider"></div>
+
+      </div>
+
+    </div>
+
+    <div class="col-md-4"><!-- no content in column 2 --></div>
+
+  </div>  
