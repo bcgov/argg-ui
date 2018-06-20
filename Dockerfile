@@ -1,5 +1,6 @@
 #Build the angular application
 FROM node:8
+ARG configuration
 WORKDIR /app
 COPY . /app
 RUN adduser --disabled-password --gecos "" app
@@ -11,7 +12,7 @@ RUN npm i -g @angular/cli
 ENV PATH="/npm-global/lib/node_modules/@angular/cli/bin:${PATH}"
 RUN npm install
 USER root
-RUN ng build --prod --build-optimizer
+RUN ng build --configuration=${configuration} --prod
 
 
 #Copy the built files (static HTML, JS, and CSS) into an nginx container

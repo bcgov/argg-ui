@@ -203,14 +203,28 @@
               <div class="form-group">
                 <label class="required" for="inputTitle">Role</label>
                 <select class="form-control" formControlName="submitterRole">
-                  <option *ngFor="let role of roles" value="role.id">{{role.name}}</option>
+                  <option *ngFor="let role of contactRoles" value="role.name">{{role.display_name}}</option>
                 </select>
               </div>
 
               <div class="form-group">
                 <label class="required" for="inputTitle">Organization</label>
-                <input type="text" class="form-control" id="submitter-org" placeholder="Organization" formControlName="submitterOrg">
-              </div>                
+                <div class="input-group">
+                  <select class="form-control" formControlName="submitterOrg">
+                    <option *ngFor="let org of topLevelOrganizations" [ngValue]="org">{{org.title}}</option>
+                  </select>
+                  <div class="input-group-addon simple-addon">
+                    <div class="loader" *ngIf="bcdcService.loadingOrganizations.value"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group" *ngIf="form2.get('submitterOrg').value && submitterSubOrganizations.length > 0">
+                <label class="required" for="inputTitle">Sub-organization</label>
+                <select class="form-control" formControlName="submitterSubOrg">
+                  <option *ngFor="let org of submitterSubOrganizations" [ngValue]="org">{{org.title}}</option>
+                </select>
+              </div>               
 
             </div>
 
@@ -222,7 +236,7 @@
             <div class="panel-body">
 
               <div class="form-group">
-                <label class="required">Does the API have an existing metadata record in the BC Data Catalog?</label><br/>&nbsp;&nbsp;
+                <label class="required">Does the API have an existing metadata record in the BC Data Catalog?</label>&nbsp;&nbsp;
 
                 <div class="radio-inline">
                   <label>
@@ -262,21 +276,21 @@
               <div class="form-group">
                 <label class="required" for="inputTitle">Who can access this API?</label>
                 <select class="form-control" formControlName="viewAudience">
-                  <option *ngFor="let viewAudience of viewAudiences" value="viewAudience">{{viewAudience}}</option>
+                  <option *ngFor="let viewAudience of viewAudiences" value="{{viewAudience.display_name}}">{{viewAudience.display_name}}</option>
                 </select>
               </div>
 
               <div class="form-group">
                 <label class="required" for="inputTitle">Security classification</label>
                 <select class="form-control" formControlName="securityClass">
-                  <option *ngFor="let securityClassification of securityClassifications" value="securityClassification">{{securityClassification}}</option>
+                  <option *ngFor="let securityClassification of securityClassifications" value="{{securityClassification.display_name}}">{{securityClassification.display_name}}</option>
                 </select>
               </div>            
 
               <div class="form-group">
                 <label class="required" for="inputTitle">License</label>
                 <select class="form-control" formControlName="license">
-                  <option *ngFor="let license of licenses" value="license.id">{{license.title}}</option>
+                  <option *ngFor="let license of licenses" [ngValue]="license">{{license.title}}</option>
                 </select>
               </div>     
 
@@ -294,7 +308,7 @@
               <p>Use of DataBC's API gateway is optional.  If the API being registered here already uses a different API gateway, or if you otherwise do not require the capabilities of an API gateway, you may opt out.</p>
 
               <div class="form-group">
-                <label class="required">Do you want the API to be registered with DataBC's API gateway?</label><br/>&nbsp;&nbsp;
+                <label class="required">Do you want the API to be registered with DataBC's API gateway?</label>&nbsp;&nbsp;
 
                 <div class="radio-inline">
                   <label>

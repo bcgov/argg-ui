@@ -24,8 +24,9 @@ export class RegisterApiComponent implements OnInit {
   submitLoading: boolean;
   submitError: any;
   topLevelOrganizations: any[];
-  ownerSubOrganizations: any[]
-  roles: any[];
+  ownerSubOrganizations: any[];
+  submitterSubOrganizations: any[];
+  contactRoles: any[];
   licenses: any[];
   securityClassifications: any[];
   viewAudiences: any[];
@@ -85,8 +86,8 @@ export class RegisterApiComponent implements OnInit {
         this.topLevelOrganizations = orgs;
       })
 
-    bcdcService.roles.subscribe(
-      (roles) => this.roles = roles
+    bcdcService.contactRoles.subscribe(
+      (contactRoles) => this.contactRoles = contactRoles
       )
 
     bcdcService.licenses.subscribe(
@@ -139,6 +140,11 @@ export class RegisterApiComponent implements OnInit {
         this.toggleSubmitterFields(this.yesNoToBool(isPrincipalContact))
       });
 
+    //conditions for updating/displaying the list of submitter sub-organizations 
+    //when an organization is chosen
+    this.form2.get("submitterOrg").valueChanges
+      .subscribe(this.enableSubmitterSubOrgs);
+
     this.form2.get("hasMetadataRecord").valueChanges
       .subscribe(hasMetadataRecord => {
         this.toggleMetadataUrl(this.yesNoToBool(hasMetadataRecord))
@@ -173,6 +179,20 @@ export class RegisterApiComponent implements OnInit {
          this.form2.get("ownerSubOrg").setValidators(null); 
         }
         this.form2.get("ownerSubOrg").updateValueAndValidity();
+      })        
+  }
+
+  enableSubmitterSubOrgs = (org) => {
+    this.bcdcService.fetchSubOrgs(org).subscribe(
+      subOrgs => {
+        this.submitterSubOrganizations = subOrgs;
+        if (subOrgs && subOrgs.length) {
+          this.form2.get("submitterSubOrg").setValidators(Validators.required)
+        }
+        else {
+         this.form2.get("submitterSubOrg").setValidators(null); 
+        }
+        this.form2.get("submitterSubOrg").updateValueAndValidity();
       })        
   }
 
@@ -269,8 +289,8 @@ export class RegisterApiComponent implements OnInit {
     var useApiKeys = this.yesNoToBool(this.form2.get("useGatewayApiKeys").value);
     var principalContact = {
       "name": this.form2.get("principalContactName").value,
-      "org_id": "d5316a1b-2646-4c19-9671-c12231c4ec8b",
-      "sub_org_id": "c1222ef5-5013-4d9a-a9a0-373c54241e77",
+      "org_id": this.form2.get("ownerOrg").value.id,
+      "sub_org_id": this.form2.get("ownerSubOrg").value.id,
       "business_email": this.form2.get("principalContactEmail").value,
       "business_phone": this.form2.get("principalContactPhone").value,
       "role": "pointOfContact", 
@@ -280,11 +300,11 @@ export class RegisterApiComponent implements OnInit {
       principalContact :
       {
         "name": this.form2.get("submitterContactName").value,
-        "org_id": "d5316a1b-2646-4c19-9671-c12231c4ec8b",
-        "sub_org_id": "c1222ef5-5013-4d9a-a9a0-373c54241e77",
+        "org_id": this.form2.get("submitterOrg").value.id,
+        "sub_org_id": this.form2.get("submitterSubOrg").value.id,
         "business_email": this.form2.get("submitterContactEmail").value,
         "business_phone": this.form2.get("submitterContactPhone").value,
-        "role": "pointOfContact"   
+        "role": this.form2.get("submitterRole").value   
       }
     var downloadAudience = this.form2.get("viewAudience").value;
 
@@ -294,9 +314,8 @@ export class RegisterApiComponent implements OnInit {
       "metadata_details": {
         "title": this.form2.get('title').value,
         "owner": {
-          "org_id": "d5316a1b-2646-4c19-9671-c12231c4ec8b",
-          "org_name": null,
-          "sub_org_id": "c1222ef5-5013-4d9a-a9a0-373c54241e77",
+          "org_id": this.form2.get("ownerOrg").value.id,
+          "sub_org_id": this.form2.get("ownerSubOrg").value.id,
           "contact_person": principalContact
         },    
         "description": this.form2.get('description').value,
@@ -308,9 +327,9 @@ export class RegisterApiComponent implements OnInit {
           "security_class": this.form2.get("securityClass").value 
         },
         "license": {
-          "license_title": null,
-          "license_url": null,
-          "license_id": null
+          "license_title": this.form2.get("license").value.title,
+          "license_url": this.form2.get("license").value.url,
+          "license_id": this.form2.get("license").value.id
         }
       },
       "existing_api": {

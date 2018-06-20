@@ -16,7 +16,7 @@ export class ArggService {
   data: a json object as specified in the OpenAPI spec for ARGG
   */
   registerApi(data: any): Observable<any> {
-    var url = `${environment.argg_api_base_url}/register_api`;
+    var url = `${environment.argg_api_base_url}/register`;
 
     var options = {
       "headers": new HttpHeaders().set('accept', "application/json")

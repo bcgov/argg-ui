@@ -11,13 +11,14 @@ import { debounceTime, mergeMap, tap, catchError, filter, reduce } from 'rxjs/op
 export class BcdcService {
 
   loadingOrganizations: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
+  loadingContactRoles: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
 
   allOrganizations: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   topLevelOrganizations: BehaviorSubject<any> = new BehaviorSubject<any>(null);
-  roles: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   licenses: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   securityClassifications: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   viewAudiences: BehaviorSubject<any> = new BehaviorSubject<any>(null);
+  contactRoles: BehaviorSubject<any> = new BehaviorSubject<any>(null);
 
   constructor(private http: HttpClient) { 
 
@@ -34,24 +35,25 @@ export class BcdcService {
         this.buildTopLevelOrgs
       )    
 
-    this.fetchRoles().subscribe(
-      (roles) => this.roles.next(roles),
-      (err) => console.error("Unable to fetch a list of 'roles'")
-      )
-
     this.fetchLicenses().subscribe(
       (licenses) => this.licenses.next(licenses),
       (err) => console.error("Unable to fetch a list of 'licenses'")
       )
 
     this.fetchSecurityClassifications().subscribe(
-      (securityClassifications) => this.securityClassifications.next(securityClassifications),
+      (resp) => this.securityClassifications.next(resp.result.tags),
       (err) => console.error("Unable to fetch a list of 'security classifications'")
       )    
 
     this.fetchViewAudiences().subscribe(
-      (viewAudiences) => this.viewAudiences.next(viewAudiences),
+      (resp) => this.viewAudiences.next(resp.result.tags),
       (err) => console.error("Unable to fetch a list of 'view audiences'")
+      )  
+
+    this.fetchContactRoles().subscribe(
+      (resp) => this.contactRoles.next(resp.result.tags),
+      (err) => console.error("Unable to fetch a list of 'contact roles'"),
+      () => {this.loadingContactRoles.next(false);}
       )  
 
   }
@@ -103,24 +105,43 @@ export class BcdcService {
     return this.http.get(url, options);
   }
 
-  public fetchRoles(): Observable<any> {
-    var url = environment.role_list_url;    
-    return this.http.get(url, {});
-  }
-
   public fetchLicenses(): Observable<any> {
     var url = environment.license_list_url;    
     return this.http.get(url, {});
   }
 
   public fetchSecurityClassifications(): Observable<any> {
-    var url = environment.security_classifications_url;    
-    return this.http.get(url, {});
+    this.loadingContactRoles.next(true);
+    var url = `${environment.bcdc_base_url}${environment.bcdc_api_path}/vocabulary_show?id=security_class`;
+
+    var options = {
+      "headers": new HttpHeaders().set('accept', "application/json")
+    }
+    
+    return this.http.get(url, options);
   }
 
   public fetchViewAudiences(): Observable<any> {
-    var url = environment.view_audiences_url;    
-    return this.http.get(url, {});
+    this.loadingContactRoles.next(true);
+    var url = `${environment.bcdc_base_url}${environment.bcdc_api_path}/vocabulary_show?id=viewable`;
+
+    var options = {
+      "headers": new HttpHeaders().set('accept', "application/json")
+    }
+    
+    return this.http.get(url, options);
   }
+
+  public fetchContactRoles(): Observable<any> { 
+    
+    this.loadingContactRoles.next(true);
+    var url = `${environment.bcdc_base_url}${environment.bcdc_api_path}/vocabulary_show?id=contact_roles`;
+
+    var options = {
+      "headers": new HttpHeaders().set('accept', "application/json")
+    }
+    
+    return this.http.get(url, options);
+  }  
 
 }
