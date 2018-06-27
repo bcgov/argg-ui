@@ -14,6 +14,8 @@ import { of, from, combineLatest } from 'rxjs';
 })
 export class RegisterApiComponent implements OnInit {
 
+  DEFAULT_ERROR_MSG: String = "Unable to register the API.";
+
   form1: FormGroup;
   form2: FormGroup;
   loadingOpenApiSpecUrl: boolean;
@@ -276,8 +278,7 @@ export class RegisterApiComponent implements OnInit {
   }
 
   submit(): void {
-    console.log("submit clicked");
-
+    
     //prepare values that will be injected into the data object but 
     //which need non-trivial computation
     var openApiSpecUrl = this.yesNoToBool(this.form1.get("hasOpenApiSpec").value);
@@ -348,6 +349,7 @@ export class RegisterApiComponent implements OnInit {
       }
     }
 
+    this.submitLoading = true;
     this.arggService.registerApi(data).subscribe(
       this.onSubmitSuccess,
       this.onSubmitError,
@@ -364,16 +366,23 @@ export class RegisterApiComponent implements OnInit {
     return default_val;
   }
 
-  onSubmitSuccess(resp) {
+  onSubmitSuccess = (resp) => {
+    console.log("success");
     this.submitSuccess = true;
     this.submitError = null;
   }
 
-  onSubmitError(err) {
-    this.submitError = true;
+  onSubmitError = (resp) => {
+    var errorMsg = this.DEFAULT_ERROR_MSG;
+    if (resp.hasOwnProperty("error") && resp.error.hasOwnProperty("msg")) {
+      errorMsg = resp.error.msg;
+    }
+
+    this.submitLoading = false;
+    this.submitError = errorMsg;
   }
 
-  onSubmitComplete() {
+  onSubmitComplete = () => {
     this.submitLoading = false;
   }
 

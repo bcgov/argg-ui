@@ -381,11 +381,17 @@
 
         <div class="alert alert-info" *ngIf="form1.valid && form2.valid && !submitSuccess">By clicking "submit" below, the information you provided here will be forwarded to DataBC.  DataBC will review the information, and may contact you <span *ngIf="form2.get('isPrincipalContact').value == 'no'">(or the API owner)</span> to confirm details of the request.</div>
 
-        <button class="btn btn-default pull-right" (click)="submit()" [disabled]="(submitLoading || !form1.valid || !form2.valid)" *ngIf="!submitSuccess">Submit</button>
-
         <div class="alert alert-success" *ngIf="form1.valid && form2.valid && submitSuccess">The API information has been submitted.  DataBC may contact you <span *ngIf="form2.get('isPrincipalContact').value == 'no'">(or the API owner)</span> to discuss the API registration.</div>
 
-        <div class="alert alert-danger" *ngIf="submitError">Unable to register the API.  {{submitError}}</div>        
+        <div class="alert alert-danger" *ngIf="submitError && !submitLoading">
+          <b>An error occurred.</b> {{submitError}}
+        </div>     
+
+        <button class="btn btn-default pull-right" (click)="submit()" [disabled]="(submitLoading || !form1.valid || !form2.valid)" *ngIf="!submitSuccess && !submitLoading">Submit</button>
+
+        <div class="well" *ngIf="submitLoading">
+          Processing. Just a moment... <div class="loader pull-right" *ngIf="submitLoading"></div>
+        </div>
 
         <div class="divider"></div>
 
