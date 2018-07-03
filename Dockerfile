@@ -24,12 +24,10 @@ COPY . /app
 
 RUN echo "prefix=/npm-global" > ~/.npmrc \
  && npm i npm@latest -g && npm i -g @angular/cli \
- && npm install
+ && npm install \
+ && ng build --configuration=${configuration} --prod
  
 USER root
-WORKDIR /app
-RUN ng build --configuration=${configuration} --prod
-
 # Install Caddy Server, and All Middleware
 RUN curl -L "https://github.com/mholt/caddy/releases/download/v$CADDY_VER/caddy_v$CADDY_VER_linux_amd64.tar.gz" \
     | tar --no-same-owner -C /usr/bin/ -xz caddy
