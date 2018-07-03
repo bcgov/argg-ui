@@ -3,11 +3,11 @@ MAINTAINER leo.lou@gov.bc.ca
 
 RUN apk update \
   && apk add --no-cache --virtual .dev nodejs python make g++ git \
-  && git config --global url.https://github.com/.insteadOf git://github.com/ \
+  && git config --global url.https://github.com/.insteadOf git://github.com/
   
 RUN adduser --disabled-password --gecos "" app \
  && mkdir /npm-global && chown -R app:app /npm-global \
- && chown -R app:app /app && chmod -R 770 /app
+ && chown -R app:app /app && chmod -R 770 /app \
  && mkdir -p /var/www
 # configures environment
 ENV NPM_CONFIG_PREFIX=/npm-global \
@@ -20,9 +20,11 @@ WORKDIR /app
 COPY . /app
 
 RUN echo "prefix=/npm-global" > ~/.npmrc \
- && npm i -g @angular/cli
-RUN npm install
+ && npm i -g @angular/cli \
+ && npm install
+ 
 USER root
+WORKDIR /app
 RUN ng build --configuration=${configuration} --prod
 
 # Install Caddy Server, and All Middleware
