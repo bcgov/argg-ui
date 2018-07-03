@@ -1,25 +1,41 @@
-#Build the angular application
-FROM node:8
+FROM alpine:3.7
+MAINTAINER leo.lou@gov.bc.ca
+
+# prepare NodeJS build env
+ENV CADDY_VER=0.11.0 \
+    CONTAINER_USER_ID="1001" \
+    CONTAINER_GROUP_ID="1001"
+
+RUN apk update \
+  && apk add --no-cache --virtual .dev curl nodejs python make g++ git tar \
+  && git config --global url.https://github.com/.insteadOf git://github.com/ \
+  && adduser -D -u ${CONTAINER_USER_ID} -g ${CONTAINER_GROUP_ID} -h /app -s /bin/sh app \
+  && mkdir /npm-global && chown -R app:app /npm-global \
+  && chown -R app:app /app && chmod -R 770 /app \
+  && mkdir -p /var/www
+
+# installation
+USER app
 ARG configuration
+    
 WORKDIR /app
 COPY . /app
-RUN adduser --disabled-password --gecos "" app
-RUN mkdir /npm-global && chown -R app:app /npm-global
-RUN chown -R app:app /app && chmod -R 770 /app
-USER app
-RUN echo "prefix=/npm-global" > ~/.npmrc
-RUN npm i -g @angular/cli
-ENV PATH="/npm-global/lib/node_modules/@angular/cli/bin:${PATH}"
-RUN npm install
+
+RUN NPM_CONFIG_PREFIX=/npm-global \
+    PATH=$NPM_CONFIG_PREFIX/bin:$NPM_CONFIG_PREFIX/lib/node_modules/@angular/cli/bin:$PATH \
+  && echo "prefix=/npm-global" > ~/.npmrc \    
+  && npm i npm@latest -g && npm i -g @angular/cli \
+  && npm install \
+  && ng build --configuration=${configuration} --prod
+# end of NodeJS build env
+
+# prepare hosting and build env cleanup
 USER root
-RUN ng build --configuration=${configuration} --prod
+ADD Caddyfile /etc/Caddyfile
+RUN curl -L "https://github.com/mholt/caddy/releases/download/v0.11.0/caddy_v0.11.0_linux_amd64.tar.gz" \
+    | tar --no-same-owner -C /usr/bin/ -xz caddy \
+  && cp -r /app/dist/* /var/www/ \
+  && apk del .dev && rm -rf /app /npm-global
 
-
-#Copy the built files (static HTML, JS, and CSS) into an nginx container
-# to serve
-FROM nginx:alpine
-COPY nginx.conf /etc/nginx/nginx.conf
-RUN rm /usr/share/nginx/html/*
-WORKDIR /usr/share/nginx/html
-COPY --from=0 /app/dist/* .
-EXPOSE 8000
+EXPOSE 8080
+CMD ["caddy", "-quic", "--conf", "/etc/Caddyfile"]
