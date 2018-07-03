@@ -7,7 +7,7 @@ ENV CADDY_VER=0.11.0 \
     CONTAINER_GROUP_ID="1001"
 
 RUN apk update \
-  && apk add --no-cache --virtual .dev curl nodejs python make g++ git \
+  && apk add --no-cache --virtual .dev curl nodejs python make g++ git tar \
   && git config --global url.https://github.com/.insteadOf git://github.com/ \
   && adduser -D -u ${CONTAINER_USER_ID} -g ${CONTAINER_GROUP_ID} -h /app -s /bin/sh app \
   && mkdir /npm-global && chown -R app:app /npm-global \
