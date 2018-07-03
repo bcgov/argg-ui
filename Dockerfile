@@ -24,8 +24,8 @@ COPY . /app
 
 RUN echo "prefix=/npm-global" > ~/.npmrc \
  && npm i npm@latest -g && npm i -g @angular/cli \
- && npm install \
- && ng build --configuration=${configuration} --prod
+ && npm install
+RUN ng build --configuration=${configuration} --prod
  
 USER root
 # Install Caddy Server, and All Middleware
