@@ -17,13 +17,13 @@ RUN apk update \
 # installation
 USER app
 ARG configuration
-ENV NPM_CONFIG_PREFIX=/npm-global \
-    PATH=$NPM_CONFIG_PREFIX/bin:$NPM_CONFIG_PREFIX/lib/node_modules/@angular/cli/bin:$PATH
     
 WORKDIR /app
 COPY . /app
 
-RUN echo "prefix=/npm-global" > ~/.npmrc \
+RUN NPM_CONFIG_PREFIX=/npm-global \
+    PATH=$NPM_CONFIG_PREFIX/bin:$NPM_CONFIG_PREFIX/lib/node_modules/@angular/cli/bin:$PATH \
+ && echo "prefix=/npm-global" > ~/.npmrc \    
  && npm i npm@latest -g && npm i -g @angular/cli \
  && npm install \
  && ng build --configuration=${configuration} --prod
