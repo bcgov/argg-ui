@@ -23,10 +23,10 @@ COPY . /app
 
 RUN NPM_CONFIG_PREFIX=/npm-global \
     PATH=$NPM_CONFIG_PREFIX/bin:$NPM_CONFIG_PREFIX/lib/node_modules/@angular/cli/bin:$PATH \
- && echo "prefix=/npm-global" > ~/.npmrc \    
- && npm i npm@latest -g && npm i -g @angular/cli \
- && npm install \
- && ng build --configuration=${configuration} --prod
+  && echo "prefix=/npm-global" > ~/.npmrc \    
+  && npm i npm@latest -g && npm i -g @angular/cli \
+  && npm install \
+  && ng build --configuration=${configuration} --prod
 # end of NodeJS build env
 
 # prepare hosting and build env cleanup
@@ -34,7 +34,8 @@ USER root
 ADD Caddyfile /etc/Caddyfile
 RUN curl -L "https://github.com/mholt/caddy/releases/download/v0.11.0/caddy_v0.11.0_linux_amd64.tar.gz" \
     | tar --no-same-owner -C /usr/bin/ -xz caddy \
- && apk del .dev && rm -rf /app /npm-global && cp -r /app/dist/* /var/www/
+  && cp -r /app/dist/* /var/www/ \
+  && apk del .dev && rm -rf /app /npm-global
 
 EXPOSE 8000
 CMD ["caddy", "-quic", "--conf", "/etc/Caddyfile"]
