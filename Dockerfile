@@ -32,7 +32,7 @@ RUN NPM_CONFIG_PREFIX=/npm-global \
 # prepare hosting and build env cleanup
 USER root
 ADD Caddyfile /etc/Caddyfile
-RUN curl -L "https://github.com/mholt/caddy/releases/download/v$CADDY_VER/caddy_v$CADDY_VER_linux_amd64.tar.gz" \
+RUN curl -L "https://github.com/mholt/caddy/releases/download/v0.11.0/caddy_v0.11.0_linux_amd64.tar.gz" \
     | tar --no-same-owner -C /usr/bin/ -xz caddy \
  && apk del .dev && rm -rf /app /npm-global && cp -r /app/dist/* /var/www/
 
