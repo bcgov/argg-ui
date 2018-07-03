@@ -33,7 +33,7 @@ RUN curl -L "https://github.com/mholt/caddy/releases/download/v$CADDY_VER/caddy_
     | tar --no-same-owner -C /usr/bin/ -xz caddy
     
 ADD Caddyfile /etc/Caddyfile
-RUN apk del .dev && rm -rf /app && cp -r /app/dist/* /var/www/
+RUN apk del .dev && rm -rf /app /npm-global && cp -r /app/dist/* /var/www/
 
 EXPOSE 8000
 CMD ["caddy", "-quic", "--conf", "/etc/Caddyfile"]
