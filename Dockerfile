@@ -1,11 +1,14 @@
 FROM alpine:3.7
 MAINTAINER leo.lou@gov.bc.ca
 
+ENV CONTAINER_USER_ID="1001" \
+    CONTAINER_GROUP_ID="1001"
+
 RUN apk update \
   && apk add --no-cache --virtual .dev nodejs python make g++ git \
   && git config --global url.https://github.com/.insteadOf git://github.com/
   
-RUN adduser --disabled-password --gecos "" app \
+RUN adduser -D -u ${CONTAINER_USER_ID} -g ${CONTAINER_GROUP_ID} -h /app -s /bin/sh app \
  && mkdir /npm-global && chown -R app:app /npm-global \
  && chown -R app:app /app && chmod -R 770 /app \
  && mkdir -p /var/www
