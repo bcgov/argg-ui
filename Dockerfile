@@ -1,25 +1,36 @@
-#Build the angular application
-FROM node:8
+FROM alpine:3.7
+MAINTAINER leo.lou@gov.bc.ca
+
+RUN apk update \
+  && apk add --no-cache --virtual .dev nodejs python make g++ git \
+  && git config --global url.https://github.com/.insteadOf git://github.com/ \
+  
+RUN adduser --disabled-password --gecos "" app \
+ && mkdir /npm-global && chown -R app:app /npm-global \
+ && chown -R app:app /app && chmod -R 770 /app
+ && mkdir -p /var/www
+# configures environment
+ENV NPM_CONFIG_PREFIX=/npm-global \
+    PATH=$NPM_CONFIG_PREFIX/bin:$PATH \
+    CADDY_VER=0.11.0
+
+USER app
 ARG configuration
 WORKDIR /app
 COPY . /app
-RUN adduser --disabled-password --gecos "" app
-RUN mkdir /npm-global && chown -R app:app /npm-global
-RUN chown -R app:app /app && chmod -R 770 /app
-USER app
-RUN echo "prefix=/npm-global" > ~/.npmrc
-RUN npm i -g @angular/cli
-ENV PATH="/npm-global/lib/node_modules/@angular/cli/bin:${PATH}"
+
+RUN echo "prefix=/npm-global" > ~/.npmrc \
+ && npm i -g @angular/cli
 RUN npm install
 USER root
 RUN ng build --configuration=${configuration} --prod
 
+# Install Caddy Server, and All Middleware
+RUN curl -L "https://github.com/mholt/caddy/releases/download/v$CADDY_VER/caddy_v$CADDY_VER_linux_amd64.tar.gz" \
+    | tar --no-same-owner -C /usr/bin/ -xz caddy
+    
+ADD Caddyfile /etc/Caddyfile
+RUN apk del .dev && rm -rf /app && cp -r /app/dist/* /var/www/
 
-#Copy the built files (static HTML, JS, and CSS) into an nginx container
-# to serve
-FROM nginx:alpine
-COPY nginx.conf /etc/nginx/nginx.conf
-RUN rm /usr/share/nginx/html/*
-WORKDIR /usr/share/nginx/html
-COPY --from=0 /app/dist/* .
 EXPOSE 8000
+CMD ["caddy", "-quic", "--conf", "/etc/Caddyfile"]
