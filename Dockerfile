@@ -23,7 +23,7 @@ WORKDIR /app
 COPY . /app
 
 RUN echo "prefix=/npm-global" > ~/.npmrc \
- && npm i -g @angular/cli \
+ && npm i npm@latest -g && npm i -g @angular/cli \
  && npm install
  
 USER root
