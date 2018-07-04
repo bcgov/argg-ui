@@ -34,7 +34,7 @@ USER root
 ADD Caddyfile /etc/Caddyfile
 RUN curl -L "https://github.com/mholt/caddy/releases/download/v0.11.0/caddy_v0.11.0_linux_amd64.tar.gz" \
     | tar --no-same-owner -C /usr/bin/ -xz caddy \
-  && cp -r /app/dist/* /var/www/ \
+  && cp -rTv /app/dist/* /var/www/ \
   && apk del .dev && rm -rf /app /npm-global
 
 EXPOSE 8080
