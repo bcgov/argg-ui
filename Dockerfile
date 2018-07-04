@@ -16,7 +16,6 @@ RUN apk update \
 
 # installation
 USER app
-ARG configuration
     
 WORKDIR /app
 COPY . /app
@@ -24,9 +23,9 @@ COPY . /app
 RUN NPM_CONFIG_PREFIX=/npm-global \
     PATH=$NPM_CONFIG_PREFIX/bin:$NPM_CONFIG_PREFIX/lib/node_modules/@angular/cli/bin:$PATH \
   && echo "prefix=/npm-global" > ~/.npmrc \    
-  && npm i npm@latest -g && npm i -g @angular/cli \
-  && npm install \
-  && ng build --configuration=${configuration} --prod
+  && npm i --no-cache npm@latest -g && npm i --no-cache -g @angular/cli \
+  && npm install --no-cache \
+  && ng build --prod
 # end of NodeJS build env
 
 # prepare hosting and build env cleanup
