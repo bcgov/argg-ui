@@ -1,6 +1,6 @@
 0.0.0.0:8080
 
-root /var/www
+root /var/www/argg-ui
 gzip
 log stdout
 errors stdout
