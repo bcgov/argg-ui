@@ -281,7 +281,7 @@ export class RegisterApiComponent implements OnInit {
     
     //prepare values that will be injected into the data object but 
     //which need non-trivial computation
-    var openApiSpecUrl = this.yesNoToBool(this.form1.get("hasOpenApiSpec").value);
+    var openApiSpecUrl = this.form1.get("openApiSpecUrl").value;
     var existingMetadataUrl = this.yesNoToBool(this.form2.get('hasMetadataRecord').value);
     var supportsHttps = this.yesNoToBool(this.form2.get("supportsHttps").value);
     var supportsCors = this.yesNoToBool(this.form2.get("supportsCors").value);
