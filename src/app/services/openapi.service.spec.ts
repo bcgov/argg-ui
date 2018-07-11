@@ -1,15 +1,15 @@
 import { TestBed, inject } from '@angular/core/testing';
 
-import { OpenapiService } from './openapi.service';
+import { OpenApiService } from './openapi.service';
 
 describe('OpenapiService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [OpenapiService]
+      providers: [OpenApiService]
     });
   });
 
-  it('should be created', inject([OpenapiService], (service: OpenapiService) => {
+  it('should be created', inject([OpenApiService], (service: OpenApiService) => {
     expect(service).toBeTruthy();
   }));
 });
