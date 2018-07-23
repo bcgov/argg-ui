@@ -1,4 +1,4 @@
-<p>The BC Government and the broader public service sector in the province collectively operate many RESTful web services (also known as Application Programming Interfaces, or APIs).  This web site provides a means to register an API with the <a href="{{env.bcdc_base_url}}" target="blank">BC Data Catalog</a> and to optionally opt in to DataBC's API gateway, which can provide additional technical capabilities on top of an existing API.</p>
+<p>The B.C. Government and the broader public sector provide many RESTful web services (also known as Application Programming Interfaces, or APIs). This website provides a means to register an API with the <a href="https://catalogue.data.gov.bc.ca" target="_blank">B.C. Data Catalogue</a> and to optionally opt in to DataBC's API gateway. The API Gateway provides additional capabilities on top of an existing API.</p>
 
   <div class="row">
     <div class="col-md-8">
@@ -11,7 +11,8 @@
           <div class="panel-body">
 
             <p><a href="https://github.com/OAI/OpenAPI-Specification" target="_blank">OpenAPI</a> is a standard format for specifying the capabilities of a RESTful API.</p>
-            <p>Although you may register an API without an OpenAPI specification, it is good practice for all RESTful APIs to provide a specification file in a standard format, such as the OpenAPI format.</p>
+
+            <p>Although you may register an API without an OpenAPI specification, it is good practice to provide a specification file for all RESTful APIs in the OpenAPI (3.x) format. Specification files can be hosted in the GitHub <a href="https://github.com/bcgov/api-specs/" target="_blank">api-specs</a> repository. If IDIR authentication is required for your specification file, it can also be hosted in the <a href="https://catalogue.data.gov.bc.ca/" target="_blank">B.C. Data Catalogue.</a></p>
 
             <div class="form-group">
               <label class="required">Does the API have an OpenAPI specification that is accessible via URL?</label>&nbsp;&nbsp;
@@ -303,9 +304,9 @@
             <div class="panel-heading">API gateway</div>
             <div class="panel-body">
 
-              <p>DataBC offers APIs in the BC public service access to an API gateway.  The API gateway can add additional capabilities (such as access control and throttling) on top of an API's core business functions.  In addition, APIs registered with the API gateway can be assigned a conveinent URL (https://app-short-name.api.gov.bc.ca).</p>
+              <p>The API gateway can add additional capabilities (such as access control and rate limiting) on top of an API's core business functions. In addition, APIs registered with the API gateway can optionally be assigned a convenient URL (https://app-short-name.api.gov.bc.ca).</p>
 
-              <p>Use of DataBC's API gateway is optional.  If the API being registered here already uses a different API gateway, or if you otherwise do not require the capabilities of an API gateway, you may opt out.</p>
+              <p>Use of DataBC's API gateway is optional. If the API being registered already uses a different API gateway, or if you otherwise do not require the capabilities of an API gateway, you may opt out.</p>
 
               <div class="form-group">
                 <label class="required">Do you want the API to be registered with DataBC's API gateway?</label>&nbsp;&nbsp;

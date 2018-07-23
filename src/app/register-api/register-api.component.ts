@@ -110,7 +110,7 @@ export class RegisterApiComponent implements OnInit {
       .pipe(
         tap(val => this.loadingOpenApiSpecUrl = true),
         debounceTime(500),
-        mergeMap(url => this.openApiService.fetch(url).pipe(catchError(() => of(null) ))),
+        mergeMap(url => this.openApiService.fetch(url).pipe(catchError((err) => { console.log(err); return of(null)} ))),
         tap(val => this.loadingOpenApiSpecUrl = false)
         )      
       .subscribe(
@@ -231,7 +231,7 @@ export class RegisterApiComponent implements OnInit {
   Supports OpenAPI 3
   */
   private populateFormFromOpenApiSpec(openApiSpecData: any) {
-    console.log(openApiSpecData);
+    
     var autocompletedAtLeastOneField = false;
     if (!openApiSpecData)
       throw "Unable to download OpenAPI specification";
