@@ -1,16 +1,5 @@
-127.0.0.1:8081 {
+0.0.0.0:8080
 root /var/www/argg-ui
 gzip
 log stdout
 errors stdout
-}
-
-0.0.0.0:8080 {
-proxy /registryapi https://{$BCDCAPI}/api
-proxy /api http://{$ARGGAPI} {
-  transparent
-  }
-proxy /int http://127.0.0.1:8081 {
-  transparent
-  }  
-}
