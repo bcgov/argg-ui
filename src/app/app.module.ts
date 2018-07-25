@@ -9,6 +9,7 @@ import { RegisterApiComponent } from './register-api/register-api.component';
 import { ArggService } from './services/argg.service';
 import { BcdcService } from './services/bcdc.service';
 import { OpenApiService } from './services/openapi.service';
+import { UrlService } from './services/url.service';
 
 @NgModule({
   declarations: [

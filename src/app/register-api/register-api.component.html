@@ -41,12 +41,11 @@
               </div>
             </div>
 
-
             <div class="alert alert-warning" role="alert" *ngIf="form1.get('openApiSpecUrl').value && openApiSpecErr">
               <span class="glyphicon glyphicon-search" aria-hidden="true"></span> {{openApiSpecErr}}
             </div>            
 
-            <div class="alert alert-info" role="alert" *ngIf="form1.get('openApiSpecUrl').value && !openApiSpecErr && autocompleteFromOpenApiSpec">
+            <div class="alert alert-info" role="alert" *ngIf="form1.get('openApiSpecUrl').value && openApiSpecData && !openApiSpecErr && autocompleteFromOpenApiSpec">
               <span class="glyphicon glyphicon-search" aria-hidden="true"></span> Some of the form fields below have been automatically completed for you based on information in the OpenAPI specification file.  Please review the information below and fill in any missing details.
             </div>  
 
