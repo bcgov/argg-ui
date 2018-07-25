@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { ArggService } from '../services/argg.service';
 import { BcdcService } from '../services/bcdc.service';
 import { OpenApiService } from '../services/openapi.service';
+import { UrlService } from '../services/url.service';
 import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { debounceTime, mergeMap, tap, catchError, filter, reduce } from 'rxjs/operators';
 import { of, from, combineLatest } from 'rxjs';
@@ -38,7 +39,8 @@ export class RegisterApiComponent implements OnInit {
   constructor(private fb: FormBuilder,
     private arggService: ArggService,
     public bcdcService: BcdcService,
-    private openApiService: OpenApiService) { 
+    private openApiService: OpenApiService,
+    private urlService: UrlService) { 
 
     this.form1 = this.fb.group({
       //OpenApi
@@ -49,7 +51,7 @@ export class RegisterApiComponent implements OnInit {
       //General
       title: [null, Validators.required],
       description: [null, Validators.required],
-      baseUrl: [null, Validators.required],
+      baseUrl: [null, Validators.compose([Validators.required, Validators.pattern(urlService.validUrlPattern)])],
       supportsHttps: [null],
       supportsCors: [null],
       //owner

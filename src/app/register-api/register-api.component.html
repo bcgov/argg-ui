@@ -84,6 +84,10 @@
                 <input type="text" class="form-control" id="base-url" placeholder="URL" formControlName="baseUrl">
               </div>  
 
+              <div class="alert alert-danger" role="alert" *ngIf="form2.get('baseUrl').errors && form2.get('baseUrl').errors.pattern">
+                Invalid URL
+              </div>   
+
               <div class="form-group">
                 <label>Does the API support HTTPS?</label>&nbsp;&nbsp;
 
