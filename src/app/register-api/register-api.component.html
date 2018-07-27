@@ -374,7 +374,7 @@
                 <div class="form-group">
                   <label for="inputTitle">Application short name</label>
                   <input type="text" class="form-control" id="application-shortname" placeholder="Application short name" formControlName="applicationShortName">
-                  <span for="inputTitle">The application short name is used to create a convient and memorable URL for the API.  For example: <span style='white-space: nowrap;'>https://<b>app-short-name</b>.api.gov.bc.ca</span></span>
+                  <span for="inputTitle">The application short name is used to create a convient and memorable URL for the API.  For example: <span style='white-space: nowrap;'>https://<strong>app-short-name</strong>.api.gov.bc.ca</span></span>
                 </div>
 
               </div>
@@ -388,7 +388,7 @@
         <div class="alert alert-success" *ngIf="form1.valid && form2.valid && submitSuccess">The API information has been submitted.  DataBC may contact you <span *ngIf="form2.get('isPrincipalContact').value == 'no'">(or the API owner)</span> to discuss the API registration.</div>
 
         <div class="alert alert-danger" *ngIf="submitError && !submitLoading">
-          <b>An error occurred.</b> {{submitError}}
+          <strong>An error occurred.</strong> {{submitError}}
         </div>     
 
         <button class="btn btn-default pull-right" (click)="submit()" [disabled]="(submitLoading || !form1.valid || !form2.valid)" *ngIf="!submitSuccess && !submitLoading">Submit</button>
