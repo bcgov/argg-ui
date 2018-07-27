@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { ArggService } from '../services/argg.service';
 import { BcdcService } from '../services/bcdc.service';
 import { OpenApiService } from '../services/openapi.service';
+import { UrlService } from '../services/url.service';
 import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { debounceTime, mergeMap, tap, catchError, filter, reduce } from 'rxjs/operators';
 import { of, from, combineLatest } from 'rxjs';
@@ -38,7 +39,8 @@ export class RegisterApiComponent implements OnInit {
   constructor(private fb: FormBuilder,
     private arggService: ArggService,
     public bcdcService: BcdcService,
-    private openApiService: OpenApiService) { 
+    private openApiService: OpenApiService,
+    private urlService: UrlService) { 
 
     this.form1 = this.fb.group({
       //OpenApi
@@ -49,7 +51,7 @@ export class RegisterApiComponent implements OnInit {
       //General
       title: [null, Validators.required],
       description: [null, Validators.required],
-      baseUrl: [null, Validators.required],
+      baseUrl: [null, Validators.compose([Validators.required, Validators.pattern(urlService.validUrlPattern)])],
       supportsHttps: [null],
       supportsCors: [null],
       //owner
@@ -107,15 +109,24 @@ export class RegisterApiComponent implements OnInit {
 
     //conditions for autopopulating form data from OpenAPI spec
     this.form1.get("openApiSpecUrl").valueChanges
-      .pipe(
-        tap(val => this.loadingOpenApiSpecUrl = true),
-        debounceTime(500),
-        mergeMap(url => this.openApiService.fetch(url).pipe(catchError((err) => { console.log(err); return of(null)} ))),
+      .pipe(        
+        debounceTime(300),        
+        tap(val => this.openApiSpecErr = null),
+        tap(val => this.setOpenApiSpecData(null)), 
+        filter(val => val),
+        tap(val => this.loadingOpenApiSpecUrl = true),       
+        mergeMap(url => this.openApiService.fetch(url).pipe(catchError(
+          (err) => { this.handleOpenApiSpecFetchError(err); return of(null); } 
+        ))),
         tap(val => this.loadingOpenApiSpecUrl = false)
         )      
       .subscribe(
         this.setOpenApiSpecData,
-        (err) => {console.log(err)}
+        (err) => {
+          console.log(err);
+          this.handleOpenApiSpecFetchError("Unknown error");
+          this.loadingOpenApiSpecUrl = false;
+        }
         ) 
 
     //conditions for enabling Step 2
@@ -158,14 +169,36 @@ export class RegisterApiComponent implements OnInit {
 
   }
 
+  handleOpenApiSpecFetchError = (err) => {
+    console.log(err);
+    if (err.hasOwnProperty("status")) {
+      if (err.status == 404) {
+        this.openApiSpecErr = "No specification file was found at the above URL.";
+        return;
+      }
+      else if (err.status == 200) {
+        if (err.hasOwnProperty("message")) {
+          this.openApiSpecErr = "Unable to parse specification file.  Ensure it is in JSON format.";
+          return;
+        }
+      }
+    }
+    
+    this.openApiSpecErr = "An error occurred when accessing the OpenAPI specification";
+
+  }
+
   setOpenApiSpecData = (openApiSpecData: any) => {
     this.openApiSpecData = openApiSpecData;
+    if (!this.openApiSpecData) {
+      return;
+    }
+
     try {
       this.populateFormFromOpenApiSpec(openApiSpecData);
       this.openApiSpecErr = null;
     }
     catch (e) {
-      console.log(e)
       this.openApiSpecErr = e;
     }    
   }
