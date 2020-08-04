@@ -38,5 +38,3 @@ RUN curl -L "https://github.com/mholt/caddy/releases/download/v0.11.0/caddy_v0.1
 
 EXPOSE 8080
 CMD ["caddy", "-quic", "--conf", "/etc/Caddyfile"]
-
-
