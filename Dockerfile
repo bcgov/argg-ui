@@ -23,7 +23,7 @@ COPY . /app
 RUN NPM_CONFIG_PREFIX=/npm-global \
     PATH=$NPM_CONFIG_PREFIX/bin:$NPM_CONFIG_PREFIX/lib/node_modules/@angular/cli/bin:$PATH \
   && echo "prefix=/npm-global" > ~/.npmrc \    
-  && npm i --no-cache npm@latest -g && npm i --no-cache -g @angular/cli \
+  && npm i --no-cache npm@latest -g && npm i --no-cache -g @angular/cli@6.0.3 \
   && npm install --no-cache \
   && ng build --prod
 # end of NodeJS build env

@@ -6,7 +6,7 @@ name: DEPLOY Package
 # events but only for the master branch
 on:
   push:
-    branches: [ dev ]
+    branches: ['dev']
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -31,7 +31,7 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
         repository: bcgov/argg-ui/argg-ui
         tag_with_ref: true
-        tag_with_sha: true
+        tag_with_sha: false
         add_git_labels: true
         #push: ${{ startsWith(github.ref, 'refs/tags/') }}
         push: true
