@@ -32,8 +32,7 @@ jobs:
           registry: docker.pkg.github.com
           username: $GITHUB_ACTOR
           password: ${{ secrets.GITHUB_TOKEN }}
-          repository: bcgov/kq-ui/kq-ui
-          dockerfile: Dockerfile.allinone
+          repository: bcgov/argg-ui/argg-ui
           push: true
           tags: ${{ steps.release.outputs.tag_name }}
           tag_with_sha: false
