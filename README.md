@@ -1,4 +1,10 @@
 # argg-ui
+
+<img src="https://github.com/bcgov/argg-ui/workflows/Package%20for%20Dev/badge.svg"></img>
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=argg-ui&metric=alert_status)](https://sonarcloud.io/dashboard?id=argg-ui)
+[![img](https://img.shields.io/badge/Lifecycle-Dormant-ff7f2a)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md)
+
+
 Frontend UI for API Registration Generator (ARGG).  This component depends on the 
 ARGG API (argg-api).
 
